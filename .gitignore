@@ -1,6 +1,7 @@
 vendor/
 node_modules/
 .env
+app/Config/Database.php
 *.log
 
 .DS_Store

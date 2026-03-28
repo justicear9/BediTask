@@ -1379,7 +1379,7 @@ $lang["auto_assign_estimate_request_to"] = "Auto assign estimate request to";
 $lang["email_template_variable"] = "Email template variable";
 $lang["example_variable_name"] = "Example_variable_name";
 
-$lang["imap_extension_error_help_message"] = "You don't have IMAP extension in your server. Please install the extension for this action.";
+$lang["imap_extension_error_help_message"] = "The PHP IMAP extension is not enabled. Email piping (creating tickets from inbound mail) cannot be configured here. Ticket types, the tickets module, and SMTP still work. Enable the imap extension in php.ini for your PHP build to use this tab.";
 
 $lang["initial_number_of_the_invoice"] = "Initial number of the invoice";
 $lang["the_invoices_id_must_be_larger_then_last_invoice_id"] = "The invoices ID must be larger than the last invoice ID.";

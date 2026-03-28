@@ -322,14 +322,17 @@ $imap_extension_success = extension_loaded("imap") ? true : false;
     <?php } else { ?>
 
         <div class="card-body">
-            <i data-feather='alert-triangle' class="icon-16 text-danger"></i>
-            <?php
-            if (!$php_version_success) {
-                echo app_lang("please_upgrade_your_php_version") . " " . app_lang("current_version") . ": <b>" . $current_php_version . "</b> " . app_lang("required_version") . ": <b>" . $php_version_required . "+</b> ";
-            } else {
-                echo app_lang("imap_extension_error_help_message");
-            }
-            ?>
+            <?php if (!$php_version_success) { ?>
+                <div class="alert alert-warning mb0" role="alert">
+                    <i data-feather='alert-triangle' class="icon-16"></i>
+                    <?php echo app_lang("please_upgrade_your_php_version") . " " . app_lang("current_version") . ": <b>" . $current_php_version . "</b> " . app_lang("required_version") . ": <b>" . $php_version_required . "+</b> "; ?>
+                </div>
+            <?php } else { ?>
+                <div class="alert alert-info mb0" role="alert">
+                    <i data-feather='info' class="icon-16"></i>
+                    <?php echo app_lang("imap_extension_error_help_message"); ?>
+                </div>
+            <?php } ?>
         </div>
 
     <?php } ?>

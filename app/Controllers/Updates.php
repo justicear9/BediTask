@@ -223,7 +223,7 @@ class Updates extends Security_Controller {
 
             $error = "You've disabled the license for this site.";
         } else if ($this->_license_remote_bypass_enabled()) {
-            // Local host (127.0.0.1, localhost, ::1) or RISE_DEV_LICENSE: no FairSketch request.
+            // Default: no FairSketch (same as localhost); set RISE_USE_FAIRSKETCH_LICENSE=true to enable API.
         } else {
 
             $purchase_code = trim((string) get_setting("item_purchase_code"));

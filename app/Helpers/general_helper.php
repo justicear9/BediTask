@@ -242,25 +242,11 @@ if (!function_exists('rise_request_hostname')) {
 }
 
 /**
- * True when the request host is a typical local dev URL (any port), e.g. 127.0.0.1:8000.
- */
-if (!function_exists('rise_is_local_dev_host')) {
-
-    function rise_is_local_dev_host(): bool {
-        $h = $_SERVER['HTTP_HOST'] ?? '';
-        if ($h !== '' && $h[0] === '[' && preg_match('/^\[([^\]]+)\](?::\d+)?$/', $h, $m)) {
-            $host = strtolower($m[1]);
-        } else {
-            $host = strtolower(preg_replace('/:\d+$/', '', $h));
-        }
-
-        return in_array($host, ['127.0.0.1', 'localhost', '::1'], true);
-    }
-}
-
-/**
- * Skip FairSketch for local dev hosts, or when RISE_DEV_LICENSE=true.
- * Set RISE_FORCE_FAIRSKETCH=true in .env to call FairSketch even on localhost.
+ * Skip FairSketch remote calls (updates/verify) unless using official licensing.
+ *
+ * Default: true everywhere (same behaviour as localhost — no FairSketch).
+ * Set RISE_USE_FAIRSKETCH_LICENSE=true in .env to use purchase code + FairSketch API.
+ * Set RISE_FORCE_FAIRSKETCH=true to call FairSketch even when the host would otherwise skip.
  */
 if (!function_exists('rise_skip_fairsketch_license')) {
 
@@ -268,11 +254,11 @@ if (!function_exists('rise_skip_fairsketch_license')) {
         if (filter_var(env('RISE_FORCE_FAIRSKETCH'), FILTER_VALIDATE_BOOLEAN)) {
             return false;
         }
-        if (filter_var(env('RISE_DEV_LICENSE'), FILTER_VALIDATE_BOOLEAN)) {
-            return true;
+        if (filter_var(env('RISE_USE_FAIRSKETCH_LICENSE'), FILTER_VALIDATE_BOOLEAN)) {
+            return false;
         }
 
-        return rise_is_local_dev_host();
+        return true;
     }
 }
 
@@ -311,23 +297,24 @@ if (!function_exists('rise_build_local_app_verification_key')) {
 }
 
 /**
- * Key exposed to JS _verfy: local synthetic hash on localhost / RISE_DEV_LICENSE, else DB value from FairSketch.
+ * Key exposed to JS _verfy: hostname-based synthetic key by default (same as localhost on every host).
+ * With RISE_USE_FAIRSKETCH_LICENSE=true, uses DB app_verification_key from FairSketch when set.
  */
 if (!function_exists('rise_effective_app_verification_key')) {
 
     function rise_effective_app_verification_key(): string {
-        $stored = (string) get_setting('app_verification_key');
-        if (rise_skip_fairsketch_license()) {
-            return rise_build_local_app_verification_key();
-        }
-        if ($stored !== '') {
-            return $stored;
-        }
-        if (defined('ENVIRONMENT') && ENVIRONMENT === 'development') {
-            return rise_build_local_app_verification_key();
+        $envKey = env('RISE_APP_VERIFICATION_KEY');
+        if (is_string($envKey) && trim($envKey) !== '') {
+            return trim($envKey);
         }
 
-        return $stored;
+        $stored = (string) get_setting('app_verification_key');
+        $useVendor = filter_var(env('RISE_USE_FAIRSKETCH_LICENSE'), FILTER_VALIDATE_BOOLEAN);
+        if ($useVendor && $stored !== '') {
+            return $stored;
+        }
+
+        return rise_build_local_app_verification_key();
     }
 }
 

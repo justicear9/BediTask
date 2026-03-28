@@ -10,7 +10,7 @@
         <div class="col-sm-9 col-lg-10">
             <div class="card">
 
-                <ul id="ticket-type-tabs" data-bs-toggle="ajax-tab" class="nav nav-tabs bg-white title" role="tablist">
+                <ul id="ticket-type-tabs" data-bs-toggle="ajax-tab" class="nav nav-tabs bg-white title" role="tablist"<?php echo !extension_loaded('imap') ? ' data-do-not-save-state="1"' : ''; ?>>
                     <li><a role="presentation" data-bs-toggle="tab" href="javascript:;" data-bs-target="#ticket-types-tab"> <?php echo app_lang('ticket_types'); ?></a></li>
                     <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("settings/tickets"); ?>" data-bs-target="#tickets-tab"><?php echo app_lang('tickets'); ?></a></li>
                     <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("settings/imap_settings"); ?>" data-bs-target="#imap_settings-tab"><?php echo app_lang('imap_settings'); ?></a></li>
@@ -53,12 +53,14 @@
             printColumns: [0]
         });
 
+        <?php if (extension_loaded('imap')) { ?>
         setTimeout(function() {
             var tab = "<?php echo $tab; ?>";
             if (tab === "imap") {
                 $("[data-bs-target='#imap_settings-tab']").trigger("click");
             }
         }, 210);
+        <?php } ?>
 
         //change the add button attributes on changing tab panel
         var $addButton = $("#add-ticket-type-button");
